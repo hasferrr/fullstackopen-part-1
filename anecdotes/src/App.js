@@ -13,17 +13,47 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0)
+  const [vote, setVote] = useState(Array(anecdotes.length).fill(0))
 
   const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
+  const nextAnecdote = () => setSelected(getRandomInt(0, anecdotes.length - 1));
+
+  const voteHandler = () => {
+    const copyVote = [...vote];
+    copyVote[selected]++;
+    setVote(copyVote);
+  }
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
-      <button onClick={() => setSelected(getRandomInt(0, anecdotes.length - 1))}>
-        next anecdote
-      </button>
+      <Button text='vote' buttonOnClick={voteHandler} />
+      <Button text='next anecdote' buttonOnClick={nextAnecdote} />
+      <h1>Anecdote with most votes</h1>
+      <MostVotes anecdotes={anecdotes} vote={vote} />
+    </div>
+  )
+}
+
+const Button = ({ text, buttonOnClick }) => <button onClick={buttonOnClick}>{text}</button>
+
+const MostVotes = ({ anecdotes, vote }) => {
+  const mostVotes = Math.max(...vote);
+  if (mostVotes === 0) {
+    return (
+      <div>
+        <p>No vote given</p>
+      </div>
+    )
+  }
+  return (
+    <div>
+      <p>{anecdotes[vote.indexOf(mostVotes)]}</p>
+      <p>has {mostVotes} votes</p>
     </div>
   )
 }
